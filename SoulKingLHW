@@ -1,0 +1,336 @@
+supportedHero = {["Ryze"] = true}
+
+if not pcall( require, "Inspired" ) then PrintChat("You are missing Inspired.lua - Go download it and save it Common!") return end
+if not pcall( require, "Deftlib" ) then PrintChat("You are missing Deftlib.lua - Go download it and save it in Common!") return end
+if not pcall( require, "DamageLib" ) then PrintChat("You are missing DamageLib.lua - Go download it and save it in Common!") return end
+
+class "Ryze"
+
+languageMenu = Menu("language", "language")
+languageMenu:List("language", "language",1, {"English","中文"})
+
+function Ryze:__init()
+
+if languageMenu.language:Value() == 1 then
+RyzeMenu = Menu("Ryze", "Ryze")
+RyzeMenu:SubMenu("Combo", "Combo")
+RyzeMenu.Combo:Boolean("R", "Use R", true)
+RyzeMenu.Combo:List("Combo1model", "Combo mode", 1, {"[W-Q-E]","[Q-W-E]", "[Q-E-W]"})
+
+RyzeMenu:SubMenu("LastHit", "LastHit")
+RyzeMenu.LastHit:Boolean("Q", "Q LastHit", true)
+RyzeMenu.LastHit:Boolean("AutoQ", "Auto Q LastHit (BETA)", false)
+RyzeMenu.LastHit:Slider("Mana", "if Mana % is More than", 30, 0, 100, 1)
+
+RyzeMenu:SubMenu("Harass", "Harass")
+RyzeMenu.Harass:Boolean("Q", "Use Q", true)
+RyzeMenu.Harass:Boolean("W", "Use W", false)
+RyzeMenu.Harass:Boolean("E", "Use E", false)
+RyzeMenu.Harass:Slider("Mana", "if Mana % is More than", 30, 0, 100, 1)
+
+RyzeMenu:SubMenu("LaneClear", "LaneClear/JungleClear")
+RyzeMenu.LaneClear:Boolean("Q", "Use Q", true)
+RyzeMenu.LaneClear:Boolean("W", "Use W", true)
+RyzeMenu.LaneClear:Boolean("E", "Use E", true)
+RyzeMenu.LaneClear:Boolean("R", "Use R", false)
+RyzeMenu.LaneClear:Slider("Mana", "if Mana % is More than", 30, 0, 100, 1)
+
+RyzeMenu:SubMenu("Killsteal", "Killsteal")
+RyzeMenu.Killsteal:Boolean("Q", "Use Q", true)
+RyzeMenu.Killsteal:Boolean("W", "Use W", true)
+RyzeMenu.Killsteal:Boolean("E", "Use E", true)
+
+RyzeMenu:SubMenu("Drawings", "Drawings")
+RyzeMenu.Drawings:Boolean("Q", "Drawings [Q]", true)
+RyzeMenu.Drawings:Boolean("W", "Drawings [W]", true)
+RyzeMenu.Drawings:Boolean("E", "Drawings [E]", false)
+RyzeMenu.Drawings:Boolean("R", "Drawings [R]", false)
+RyzeMenu.Drawings:Slider("dp", "Quality Picker", 255, 1, 255, 1)
+RyzeMenu.Drawings:ColorPick("color", "Color Picker", {255,255,255,0})
+
+RyzeMenu:SubMenu("Misc", "Misc")
+RyzeMenu.Misc:Boolean("Autoignite", "Autoignite", true)
+RyzeMenu.Misc:Boolean("Autolvl", "Autolvl", true)
+RyzeMenu.Misc:DropDown("Autolvltable", "Priority", 1, {"Q-W-E", "W-Q-E", "Q-E-W"})
+RyzeMenu.Misc:Menu("RyzeBuff", "Ryze Buff (BETA)")
+RyzeMenu.Misc.RyzeBuff:Boolean("Autobuff", "Auto Buff", false)
+RyzeMenu.Misc.RyzeBuff:Slider("Buffnumber", "Buff keep", 3, 1, 5, 1)
+RyzeMenu.Misc.RyzeBuff:Slider("Mana", "if Mana % is More than", 30, 0, 100, 1)
+
+else 
+RyzeMenu = Menu("Ryze|流浪法师", "Ryze")
+RyzeMenu:SubMenu("Combo", "连招")
+RyzeMenu.Combo:Boolean("R", "使用 R", true)
+RyzeMenu.Combo:List("Combo1model", "连招方式", 1, {"[W-Q-E]","[Q-W-E]", "[Q-E-W]"})
+
+RyzeMenu:SubMenu("LastHit", "补兵")
+RyzeMenu.LastHit:Boolean("Q", "用Q补兵", true)
+RyzeMenu.LastHit:Boolean("AutoQ", "自动用Q补兵 (BETA)", false)
+RyzeMenu.LastHit:Slider("Mana", "如果法力低于停止使用", 30, 0, 100, 1)
+
+RyzeMenu:SubMenu("Harass", "骚扰")
+RyzeMenu.Harass:Boolean("Q", "使用 Q", true)
+RyzeMenu.Harass:Boolean("W", "使用 W", false)
+RyzeMenu.Harass:Boolean("E", "使用 E", false)
+RyzeMenu.Harass:Slider("Mana", "如果法力低于停止使用", 30, 0, 100, 1)
+
+RyzeMenu:SubMenu("LaneClear", "清兵/清野")
+RyzeMenu.LaneClear:Boolean("Q", "使用 Q", true)
+RyzeMenu.LaneClear:Boolean("W", "使用 W", true)
+RyzeMenu.LaneClear:Boolean("E", "使用 E", true)
+RyzeMenu.LaneClear:Boolean("R", "使用 R", false)
+RyzeMenu.LaneClear:Slider("Mana", "如果法力低于停止使用", 30, 0, 100, 1)
+
+RyzeMenu:SubMenu("Killsteal", "抢人头")
+RyzeMenu.Killsteal:Boolean("Q", "使用 Q", true)
+RyzeMenu.Killsteal:Boolean("W", "使用 W", true)
+RyzeMenu.Killsteal:Boolean("E", "使用 E", true)
+
+RyzeMenu:SubMenu("Drawings", "技能范围")
+RyzeMenu.Drawings:Boolean("Q", "画出 [Q]", true)
+RyzeMenu.Drawings:Boolean("W", "画出 [W]", true)
+RyzeMenu.Drawings:Slider("dp", "线圈质量", 255, 1, 255, 1)
+RyzeMenu.Drawings:ColorPick("color", "线圈颜色", {255,255,255,0})
+
+RyzeMenu:SubMenu("Misc", "杂项")
+RyzeMenu.Misc:Boolean("Autoignite", "自动点燃", true)
+RyzeMenu.Misc:Boolean("Autolvl", "自动升技能", true)
+RyzeMenu.Misc:DropDown("Autolvltable", "优先升级", 1, {"Q-W-E", "W-Q-E", "Q-E-W"})
+RyzeMenu.Misc:Menu("RyzeBuff", "叠被动(BETA)")
+RyzeMenu.Misc.RyzeBuff:Boolean("Autobuff", "自动叠被动", false)
+RyzeMenu.Misc.RyzeBuff:Slider("Buffnumber", "被动保持层数", 3, 1, 5, 1)
+RyzeMenu.Misc.RyzeBuff:Slider("Mana", "如果法力低于停止使用", 30, 0, 100, 1)
+end
+
+OnDraw(function(myHero) self:OnDraw(myHero) end)
+OnTick(function(myHero) self:OnTick(myHero) end)
+
+end
+
+
+function Ryze:OnDraw(myHero)
+	
+	
+if RyzeMenu.Drawings.Q:Value() then
+    local color = RyzeMenu.Drawings.color:Value()
+	local Quality = RyzeMenu.Drawings.dp:Value()
+	DrawCircle(myHeroPos(myHero),900,1,Quality,color)
+	end
+	if RyzeMenu.Drawings.W:Value() then
+	DrawCircle(myHeroPos(myHero),600,1,Quality,color)
+	end
+end
+
+function Ryze:OnTick(myHero)
+Target = IOW:GetTarget()
+self:Killsteal()
+            for i = 0,63 do
+
+		        if GetBuffCount(myHero,i) > 0 then
+		        currbufname = GetBuffName(myHero,i)
+		        currbufcount = GetBuffCount(myHero,i)
+			        if IOW:Mode() == "Combo"  then
+					  
+	                    if currbufname == "ryzepassivestack" and currbufcount >= 3 and Ready(_Q) and Ready(_R) and RyzeMenu.Combo.R:Value() then					  
+	                    CastSpell(_R)		  
+				        end	
+						 
+				        if currbufname == "ryzepassivecharged" and Ready(_R)  and Ready(_Q) then 
+				        CastSpell(_R)
+				        end
+						
+                        
+				  		 
+			        end
+					
+					if IOW:Mode() == "LaneClear" then
+					
+                        if currbufname == "ryzepassivestack" and currbufcount >= 3 and Ready(_Q) and Ready(_R) and RyzeMenu.LaneClear.R:Value() then					  
+	                    CastSpell(_R)		  
+				        end	
+						if currbufname == "ryzepassivecharged" and Ready(_R)  and Ready(_Q) and RyzeMenu.LaneClear.R:Value() then 
+				        CastSpell(_R)
+				        end
+																
+					end
+	
+                end 
+	
+            end
+			
+		if IOW:Mode() == "Combo"  then
+                  if  RyzeMenu.Combo.Combo1model:Value() == 1 then self:WQE(Target)	
+	                    elseif  RyzeMenu.Combo.Combo1model:Value() == 2 then self:QWE(Target)	
+	                    elseif  RyzeMenu.Combo.Combo1model:Value() == 3 then self:QEW(Target)
+                        end
+                    end
+						
+   if IOW:Mode() == "LaneClear" then   
+   self:LaneClear()    
+   end
+  if IOW:Mode() == "Harass" and  GetPercentMP(myHero) >= RyzeMenu.Harass.Mana:Value() then
+
+	  if ValidTarget(Target,900) then  	
+       local Q2Pred = GetPredictionForPlayer(myHeroPos(),Target,GetMoveSpeed(Target),1400,250,900,55,false,true)
+	                      if Ready(_Q) and  RyzeMenu.Harass.Q:Value() and Q2Pred.HitChance == 1 then
+						  	   DrawText("Harass", 20, 400, 400, 0xffE0FFFF)
+                           CastSkillShot(_Q,Q2Pred.PredPos.x,Q2Pred.PredPos.y,Q2Pred.PredPos.z)
+	                       end
+      
+	                       if Ready(_W) and RyzeMenu.Harass.W:Value() then
+                               CastTargetSpell(Target, _W)
+	                           end
+	
+	                 if Ready(_E) and RyzeMenu.Harass.E:Value() then
+	                CastTargetSpell(Target, _E)
+	                    end
+	                    end
+                      end 	
+  
+  if IOW:Mode() == "LastHit" then   
+   self:AutoLastHit()    
+   end
+   
+self:Misc()
+self:Autobuff() 
+		 
+end
+
+function Ryze:Misc()
+	if RyzeMenu.Misc.Autoignite:Value() then
+	local Ignite = (GetCastName(GetMyHero(),SUMMONER_1):lower():find("summonerdot") and SUMMONER_1 or (GetCastName(GetMyHero(),SUMMONER_2):lower():find("summonerdot") and SUMMONER_2 or nil))
+		if Ignite then
+        for _, enemy in pairs(GetEnemyHeroes()) do
+            if CanUseSpell(GetMyHero(), Ignite) == READY and (20*GetLevel(GetMyHero())+50) > GetCurrentHP(enemy)+GetHPRegen(enemy)*2.5 and GetDistanceSqr(GetOrigin(enemy)) < 600*600 then
+                CastTargetSpell(enemy, Ignite)
+            end
+        end
+    end
+end
+    if RyzeMenu.Misc.Autolvl:Value() then
+	if RyzeMenu.Misc.Autolvltable:Value() == 1 then leveltable = {_Q, _W, _E, _Q, _Q, _R, _Q, _W, _Q, _W, _R, _W, _W, _E, _E, _R, _E, _E}
+    elseif RyzeMenu.Misc.Autolvltable:Value() == 2 then leveltable = {_Q, _W, _E, _W, _W, _R, _W, _Q, _W, _Q, _R, _Q, _Q, _E, _E, _R, _E, _E}
+    elseif RyzeMenu.Misc.Autolvltable:Value() == 3 then leveltable = {_Q, _W, _E, _Q, _Q, _R, _Q, _E, _Q, _E, _R, _E, _E, _W, _W, _R, _W, _W}
+    end
+    LevelSpell(leveltable[GetLevel(myHero)])
+	end
+end
+
+function Ryze:Killsteal()
+
+	for _, enemy in pairs(GetEnemyHeroes()) do
+		local enemyHP = GetCurrentHP(enemy)
+		local Qdamage = 60 * GetCastLevel(myHero, _Q) + 0.55*GetBonusAP(myHero) + 0.015*GetMaxMana(myHero) + 0.005*GetCastLevel(myHero,_Q)*GetMaxMana(myHero)
+	    local Wdamage = 80 * GetCastLevel(myHero, _W) + 0.4*GetBonusAP(myHero) + 0.025*GetMaxMana(myHero)
+	    local Edamage = 36 * GetCastLevel(myHero, _E) + 0.2*GetBonusAP(myHero) + 0.02*GetMaxMana(myHero)
+		local QdamageHP = CalcDamage(myHero, enemy, 0, Qdamage)
+		local WdamageHP = CalcDamage(myHero, enemy, 0, Wdamage)
+		local EdamageHP = CalcDamage(myHero, enemy, 0, Edamage)
+		if Ready(_Q) and ((enemyHP - 3) < QdamageHP) and ValidTarget(enemy, 870) then
+			Cast(_Q,enemy)
+		end
+		if Ready(_W) and ((enemyHP - 3) < WdamageHP) and ValidTarget(enemy, 600) then
+			CastTargetSpell(enemy, _W)
+		end
+		if Ready(_E) and ((enemyHP - 3) < EdamageHP) and ValidTarget(enemy, 600) then
+			CastTargetSpell(enemy, _E)
+		end
+	end
+end
+
+function Ryze:WQE(target)			
+	if ValidTarget(Target, 600) then		
+			if Ready(_W)then
+			    CastTargetSpell(Target, _W)       
+            elseif not Ready(_W) and Ready(_Q) then
+               Cast(_Q,target)
+            elseif not Ready(_Q) and Ready(_E) then
+               CastTargetSpell(Target, _E)
+				
+        end
+	end
+end
+
+function Ryze:QWE(target)			
+	if ValidTarget(target, 900) then		
+          if Ready(_Q)then
+	          Cast(_Q,target)
+	      elseif not Ready(_Q) and Ready(_W) then
+               CastTargetSpell(Target, _W)
+          elseif not Ready(_W) and Ready(_E) then
+               CastTargetSpell(Target, _E)
+				
+        end
+	
+	end
+end
+
+function Ryze:QEW(target)			
+	if ValidTarget(target, 900) then		
+		 if Ready(_Q)then
+	          Cast(_Q,target)
+	      elseif not Ready(_Q) and Ready(_E) then
+               CastTargetSpell(Target, _E)
+          elseif not Ready(_E) and Ready(_W) then
+               CastTargetSpell(Target, _W)
+        end	
+	end
+end
+
+function Ryze:LaneClear()     
+        for i,minion in pairs(minionManager.objects) do 			
+                        if ValidTarget(minion, 600) then
+						 
+                        if GetPercentMP(myHero) >= RyzeMenu.LaneClear.Mana:Value()  then
+							local PMinion = GetOrigin(minion)
+							if Ready(_W) and RyzeMenu.LaneClear.W:Value() then
+							CastTargetSpell(minion, _W)
+							end						
+							if Ready(_Q) and RyzeMenu.LaneClear.Q:Value() then
+							CastSkillShot(_Q,PMinion.x,PMinion.y,PMinion.z)
+							end								
+							if Ready(_E) and RyzeMenu.LaneClear.E:Value() then
+							CastTargetSpell(minion, _E)						
+							end 		
+             
+						end
+			end
+end
+end
+
+function Ryze:AutoLastHit() 
+
+for i,minion in pairs(minionManager.objects) do    
+    if  ValidTarget(minion, 900)  then
+    local PosM = GetOrigin(minion)
+    local SpellDamage = 60 * GetCastLevel(myHero, _Q) + 0.55*GetBonusAP(myHero) + 0.015*GetMaxMana(myHero) + 0.005*GetCastLevel(myHero,_Q)*GetMaxMana(myHero)
+		local MDamage = CalcDamage(myHero, minion, 0, SpellDamage)
+       if Ready(_Q) and RyzeMenu.LastHit.Q:Value() and GetPercentMP(myHero) >= RyzeMenu.LastHit.Mana:Value() and (GetCurrentHP(minion) - 25) <= MDamage then
+        CastSkillShot(_Q,PosM.x,PosM.y,PosM.z)
+       end
+     end
+ end
+end
+
+
+function Ryze:Autobuff() 
+if Ready(_Q) and IOW:Mode() ~= "Combo" and IOW:Mode() ~= "Harass" and  GotBuff(myHero,"recall") == 0  then
+   local Stacks = GotBuff(myHero, "ryzepassivestack")
+    for i,mobs in pairs(minionManager.objects) do
+	    if GetTeam(mobs) == MINION_ENEMY and ValidTarget(mobs, 3000) then
+		if RyzeMenu.LastHit.AutoQ:Value() and ValidTarget(mobs, 885)  and  GetPercentMP(myHero) >= RyzeMenu.LastHit.Mana:Value() and GetCurrentHP(mobs) < getdmg("Q",mobs) and Stacks < RyzeMenu.Misc.RyzeBuff.Buffnumber:Value() then 
+		 CastSkillShot(_Q,GetOrigin(mobs))
+		 end
+		elseif RyzeMenu.Misc.RyzeBuff.Autobuff:Value() and Stacks < RyzeMenu.Misc.RyzeBuff.Buffnumber:Value() and  GetPercentMP(myHero) >= RyzeMenu.Misc.RyzeBuff.Mana:Value() then
+	     CastSkillShot(_Q,GetMousePos())
+		 end
+		
+		end 
+    end
+	end
+
+if supportedHero[GetObjectName(myHero)] == true then
+	if _G[GetObjectName(myHero)] then
+  		_G[GetObjectName(myHero)]()
+	end 
+end
