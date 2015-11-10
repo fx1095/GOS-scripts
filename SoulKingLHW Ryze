@@ -173,7 +173,6 @@ self:Killsteal()
 	  if ValidTarget(Target,900) then  	
        local Q2Pred = GetPredictionForPlayer(myHeroPos(),Target,GetMoveSpeed(Target),1400,250,900,55,false,true)
 	                      if Ready(_Q) and  RyzeMenu.Harass.Q:Value() and Q2Pred.HitChance == 1 then
-						  	   DrawText("Harass", 20, 400, 400, 0xffE0FFFF)
                            CastSkillShot(_Q,Q2Pred.PredPos.x,Q2Pred.PredPos.y,Q2Pred.PredPos.z)
 	                       end
       
