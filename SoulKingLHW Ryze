@@ -109,11 +109,11 @@ end
 
 
 function Ryze:OnDraw(myHero)
-	
-	
+
+        local color = RyzeMenu.Drawings.color:Value()
+	local Quality = RyzeMenu.Drawings.dp:Value()	
 if RyzeMenu.Drawings.Q:Value() then
-    local color = RyzeMenu.Drawings.color:Value()
-	local Quality = RyzeMenu.Drawings.dp:Value()
+
 	DrawCircle(myHeroPos(myHero),900,1,Quality,color)
 	end
 	if RyzeMenu.Drawings.W:Value() then
